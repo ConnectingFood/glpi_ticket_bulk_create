@@ -19,7 +19,7 @@ def main(service: TicketService = Provide[Container.ticket_service]):
         args = sys.argv[1:]
         mode = args[0]
         client_cnpj = args[1]
-        month = args[2]
+        month = int(args[2])
 
         if mode not in MODES or month > 12:
             raise Exception
