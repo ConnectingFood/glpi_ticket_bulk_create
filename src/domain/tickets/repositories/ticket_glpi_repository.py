@@ -31,13 +31,12 @@ class TicketGLPIRepository(BaseGLPIRepository):
         json_result = result.json()
 
         if json_result['totalcount'] > 0:
-            return (list(map(lambda x: x["2"], json_result["data"])),list(map(lambda x: x["70"], json_result["data"])))
+            return (list(map(lambda x: x["2"], json_result["data"])), list(map(lambda x: x["70"], json_result["data"])))
         return []
     
     def create_ticket(self, ticket_create_model: List[CreateTicketModel]):
         payload = CreateTicketModel.bulk_model_dump(ticket_create_model)
         full_url = f"{self.BASE_GLPI_URL}/Ticket/"
-        # result = requests.post(full_url, headers=self.get_auth_header(session=True), json={"input": payload})
-        # return result
-        return None
+        result = requests.post(full_url, headers=self.get_auth_header(session=True), json={"input": payload})
+        return result
     

@@ -9,6 +9,7 @@ __pycache__/
 # Relatorios
 *.xlsx
 .vscode
+.tool-versions
 
 # Distribution / packaging
 .Python
