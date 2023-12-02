@@ -15,6 +15,7 @@ class TicketService:
         self.repository = repository
         self.glpi_repository = glpi_repository
         self.logger = logger
+        self.CHUNK_SIZE = 30
 
     def ticket_create(self, client_cnpj: str, **kwargs) -> None:
         self.logger.debug(f"Iniciando rotina 'criar' para {client_cnpj=}.")
@@ -29,7 +30,6 @@ class TicketService:
 
         list_create_ticket_model = self.__format_create_ticket_model(client_shops_model, **kwargs)
         
-
         self.logger.debug(f"Iniciando criacao de {len(list_create_ticket_model)} chamados no glpi.")
         self.glpi_repository.create_ticket(list_create_ticket_model)
         self.logger.debug(f"Chamados Criados.")
@@ -55,7 +55,10 @@ class TicketService:
                 client_shop_model.glpi_entities_id = list_of_glpi_entity_ids[glpi_entity_index]
 
         return client_shops_model
-        
+
+    def __divide_chunks(self, list_to_divide: List[any], chunck_size: int):
+        for i in range(0, len(list_to_divide), chunck_size):
+            yield list_to_divide[i:i + chunck_size]
 
     def __get_non_donators_by_client_cnpj(self, client_cnpj: str, month=None, year=None) -> List[ClientShopModel]:
         self.logger.debug(f"Buscando clientes no banco CF para o {client_cnpj=}.")
@@ -70,8 +73,14 @@ class TicketService:
     
     def __get_list_entity_id_by_cnpj(self, list_cnpj: List[str]) -> Tuple[List[int], List[str]]:
         self.logger.debug("Consultando lista de CNPJs no glpi.")
-        entity_ids = self.glpi_repository.get_entity_id_by_cnpj(list_cnpj=list_cnpj)
-        return entity_ids
+        chunks_of_list_create_ticket_model = self.__divide_chunks(list_to_divide=list_cnpj, chunck_size=self.CHUNK_SIZE)
+        list_of_glpi_entity_ids = [] 
+        list_of_glpi_entity_cnpj = []
+        for chunk in chunks_of_list_create_ticket_model:
+            entity_ids = self.glpi_repository.get_entity_id_by_cnpj(list_cnpj=chunk)
+            list_of_glpi_entity_ids += entity_ids[0]
+            list_of_glpi_entity_cnpj += entity_ids[1]
+        return (list_of_glpi_entity_ids, list_of_glpi_entity_cnpj)
     
     def __generate_report(self, client_shops_model) -> None:
         client_shops_dict = ClientShopModel.bulk_model_dump(client_shops_model)
