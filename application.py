@@ -20,6 +20,7 @@ def main(service: TicketService = Provide[Container.ticket_service]):
         mode = args[0]
         client_cnpj = args[1]
         month = int(args[2])
+        year = int(args[3])
 
         if mode not in MODES or month > 12:
             raise Exception
@@ -34,9 +35,9 @@ Modos disponiveis:
         """)
 
     if mode == "relatorio":
-        service.ticket_report(client_cnpj, month=month)
+        service.ticket_report(client_cnpj, month=month, year=year)
     if mode == "criar":
-        service.ticket_create(client_cnpj, month=month)
+        service.ticket_create(client_cnpj, month=month, year=year)
 
 if __name__ == '__main__':
     container = containers.init_app()
