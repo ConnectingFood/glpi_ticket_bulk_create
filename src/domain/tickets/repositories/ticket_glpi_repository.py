@@ -40,6 +40,9 @@ class TicketGLPIRepository(BaseGLPIRepository):
         filters = {
             "range": "0-99999",
         }
+        filters[f"criteria[0][field]"] = "76689"
+        filters[f"criteria[0][searchtype]"] =  "equals"
+        filters[f"criteria[0][value]"] = "1"
 
         full_url = f"{self.BASE_GLPI_URL}/search/entity/"
         result = requests.get(full_url, headers=self.get_auth_header(session=True),params=filters)
@@ -51,7 +54,7 @@ class TicketGLPIRepository(BaseGLPIRepository):
                 list(map(lambda x:{
                 "id": x["2"],
                 "cnpj": x["70"],
-                "title": x["76677"],
+                "title": x["14"],
             }, json_result["data"])))
 
         return glpi_result
