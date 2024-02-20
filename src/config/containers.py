@@ -5,8 +5,12 @@ from dotenv import dotenv_values
 from src.domain.tickets.repositories.ticket_repository import TicketRepository
 from src.domain.tickets.repositories.ticket_glpi_repository import TicketGLPIRepository
 from src.domain.tickets.services.tickets_service import TicketService
+from src.domain.orgs.repositories.org_repository import OrgRepository
+from src.domain.orgs.repositories.org_glpi_db_repository import OrgGLPIDBRepository
+from src.domain.orgs.services.org_service import OrgService
 from src.shared.services.base_logger import BaseLogger
 from src.config.db import DBConnection
+from src.config.glpi_db import GLPIDBConnection
 
 
 class Container(containers.DeclarativeContainer):
@@ -23,6 +27,13 @@ class Container(containers.DeclarativeContainer):
         password=config.DB_PASS,
         database=config.DB_NAME
     )
+    glpi_db = providers.Singleton(
+        GLPIDBConnection,
+        server=config.GLPI_DB_SERVER,
+        user=config.GLPI_DB_USER,
+        password=config.GLPI_DB_PASS,
+        database=config.GLPI_DB_NAME
+    )
 
     ticket_glpi_repository = providers.Factory(
         TicketGLPIRepository,
@@ -36,11 +47,29 @@ class Container(containers.DeclarativeContainer):
         TicketRepository,
         connection=db
     )
-
+    
     ticket_service = providers.Factory(
         TicketService,
         repository=ticket_repository,
         glpi_repository=ticket_glpi_repository,
+        logger=logger
+    )
+
+    org_repository = providers.Factory(
+        OrgRepository,
+        connection=db
+    )
+    
+    org_glpi_db_repository = providers.Factory(
+        OrgGLPIDBRepository,
+        connection=glpi_db
+    )
+    
+    org_service = providers.Factory(
+        OrgService,
+        repository=org_repository,
+        glpi_repository=ticket_glpi_repository,
+        org_glpi_db_repository=org_glpi_db_repository,
         logger=logger
     )
 

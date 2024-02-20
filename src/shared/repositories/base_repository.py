@@ -1,10 +1,11 @@
 from typing import Union, Dict, List
 
 from src.config.db import DBConnection
+from src.config.glpi_db import GLPIDBConnection
 
 
 class BaseRepository:
-    def __init__(self, connection: DBConnection):
+    def __init__(self, connection: Union[DBConnection, GLPIDBConnection]):
         self.session = connection.get_session()
         self.cursor = connection.get_cursor()
 

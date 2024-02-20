@@ -5,11 +5,13 @@ from dependency_injector.wiring import Provide, inject
 from src.config import containers
 from src.config.containers import Container
 from src.domain.tickets.services.tickets_service import TicketService
+from src.domain.orgs.services.org_service import OrgService
+
 
 @inject
-def main(service: TicketService = Provide[Container.ticket_service]):
+def main(service: TicketService = Provide[Container.ticket_service], org_service: OrgService = Provide[Container.org_service]):
 
-    MODES = ["relatorio", "criar"]
+    MODES = ["relatorio", "criar", "sync_osc", "relatorio_sync"]
 
     if len(sys.argv) <= 1:
         print("Necessario informar parametro: relatorio ou criar")
@@ -18,12 +20,16 @@ def main(service: TicketService = Provide[Container.ticket_service]):
     try:
         args = sys.argv[1:]
         mode = args[0]
-        client_cnpj = args[1]
-        month = int(args[2])
-        year = int(args[3])
-
-        if mode not in MODES or month > 12:
+        if mode not in MODES:
             raise Exception
+        
+        if mode in ["relatorio", "criar"]:
+            client_cnpj = args[1]
+            month = int(args[2])
+            year = int(args[3])
+
+            if month > 12:
+                raise Exception
         
     except Exception:
         exit("""Parametros invalidos.
@@ -38,6 +44,10 @@ Modos disponiveis:
         service.ticket_report(client_cnpj, month=month, year=year)
     if mode == "criar":
         service.ticket_create(client_cnpj, month=month, year=year)
+    if mode == "sync_osc":
+        org_service.sync_glpi_with_db()
+    if mode == "relatorio_sync":
+        org_service.orgs_glpi_report()
 
 if __name__ == '__main__':
     container = containers.init_app()
