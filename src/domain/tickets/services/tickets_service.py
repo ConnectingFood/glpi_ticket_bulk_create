@@ -99,7 +99,7 @@ class TicketService:
 
         for client_shop_model in client_shops_model:
             formatted_dict = {
-                "name": f"Não doou - {client_shop_model.titulo} | {client_shop_model.codigo_organizacao_cliente} - {client_shop_model.razao_social}",
+                "name": f"Não doou - {month} {year} - {client_shop_model.titulo} | {client_shop_model.codigo_organizacao_cliente} - {client_shop_model.razao_social}",
                 "content": f"Monitoramento de loja que não realizou doação em {month} {year}",
                 "itilcategories_id": 18,
                 "type": 2,

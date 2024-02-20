@@ -38,9 +38,9 @@ class Container(containers.DeclarativeContainer):
     ticket_glpi_repository = providers.Factory(
         TicketGLPIRepository,
         base_glpi_url=config.BASE_GLPI_URL,
-        glpi_app_token=config.GLPI_APP_TOKEN,
-        glpi_user=config.GLPI_USER,
-        glpi_pass=config.GLPI_PASS,
+        GLPI_APP_TOKEN_NOVO=config.GLPI_APP_TOKEN_NOVO,
+        GLPI_USER_NOVO=config.GLPI_USER_NOVO,
+        GLPI_PASS_NOVO=config.GLPI_PASS_NOVO,
     )
 
     ticket_repository = providers.Factory(
