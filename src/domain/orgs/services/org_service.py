@@ -77,6 +77,7 @@ class OrgService:
         glpi_org_model_list = []
 
         for org_model in org_models:
+            org_model.titulo = f"{org_model.titulo}|{org_model.cnpj}"
             glpi_org_model_list.append(GLPIOrgModel(
                 **org_model.model_dump(),
                 address = f" {org_model.endereco  or ''}, {org_model.numero  or ''}, {org_model.complemento  or ''}, {org_model.cep or ''}, {org_model.bairro  or ''}, {org_model.cidade  or ''}, {org_model.estado  or ''}",
