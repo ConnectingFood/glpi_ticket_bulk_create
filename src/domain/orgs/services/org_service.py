@@ -59,7 +59,7 @@ class OrgService:
         list_of_glpi_entity_cnpj = []
         for chunk in chunks_of_list_create_ticket_model:
             entity_ids = self.glpi_repository.get_entity_id_by_cnpj(chunk)
-            list_of_glpi_entity_cnpj += entity_ids[1]
+            list_of_glpi_entity_cnpj += entity_ids[1] if len(entity_ids) else entity_ids
 
         to_create = []
         for org in orgs_with_cnpj:
