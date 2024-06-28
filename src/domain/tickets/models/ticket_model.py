@@ -9,6 +9,13 @@ class CreateTicketModel(CustomBaseModel):
     priority: int # 6
     entities_id: int
 
+class CreateTicketFollowUpModel(CustomBaseModel):
+    items_id: int
+    content: str
+    requesttypes_id: int
+    status: int
+    itemtype: Optional[str] = "Ticket"
+
 class ClientShopModel(CustomBaseModel):
     glpi_entities_id: Optional[int] = None
     titulo: str

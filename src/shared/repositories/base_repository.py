@@ -18,6 +18,9 @@ class BaseRepository:
         if commit:
             self.session.commit()
 
+    def get_arg_string(self, arg_len: int) -> str:
+        return ",".join(["%s" for _ in range(arg_len)])
+
     def execute(self, query: str, commit=False, args=[]) -> None:
         self._execute_query(query, commit, args)
 

@@ -11,7 +11,7 @@ from src.domain.orgs.services.org_service import OrgService
 @inject
 def main(service: TicketService = Provide[Container.ticket_service], org_service: OrgService = Provide[Container.org_service]):
 
-    MODES = ["relatorio", "criar", "sync_osc", "relatorio_sync"]
+    MODES = ["relatorio", "criar", "sync_osc", "relatorio_sync", "email_renovacao"]
 
     if len(sys.argv) <= 1:
         print("Necessario informar parametro: relatorio ou criar")
@@ -48,6 +48,8 @@ Modos disponiveis:
         org_service.sync_glpi_with_db()
     if mode == "relatorio_sync":
         org_service.orgs_glpi_report()
+    if mode == "email_renovacao":
+        org_service.send_renovation_email()
 
 if __name__ == '__main__':
     container = containers.init_app()

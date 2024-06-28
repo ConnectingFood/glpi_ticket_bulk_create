@@ -11,13 +11,19 @@ from src.domain.orgs.services.org_service import OrgService
 from src.shared.services.base_logger import BaseLogger
 from src.config.db import DBConnection
 from src.config.glpi_db import GLPIDBConnection
-
+from src.shared.services.sendgrid_service import SendgridService
 
 class Container(containers.DeclarativeContainer):
     config = providers.Configuration()
 
     logger = providers.Singleton(
         BaseLogger.get_logger
+    )
+
+    sendgrid_service = providers.Factory(
+        SendgridService,
+        sendgrid_key=config.SENDGRID_API_KEY,
+        from_email=config.SENDGRID_FROM_EMAIL,
     )
 
     db = providers.Singleton(
@@ -70,6 +76,7 @@ class Container(containers.DeclarativeContainer):
         repository=org_repository,
         glpi_repository=ticket_glpi_repository,
         org_glpi_db_repository=org_glpi_db_repository,
+        sendgrid_service=sendgrid_service,
         logger=logger
     )
 

@@ -5,6 +5,8 @@ click==8.1.7
 dependency-injector==4.41.0
 et-xmlfile==1.1.0
 idna==3.4
+Jinja2==3.1.4
+MarkupSafe==2.1.5
 mysql-connector-python==8.3.0
 numpy==1.26.1
 openpyxl==3.1.2
@@ -14,9 +16,12 @@ pydantic_core==2.10.1
 pymssql==2.2.10
 python-dateutil==2.8.2
 python-dotenv==1.0.0
+python-http-client==3.3.7
 pytz==2023.3.post1
 requests==2.31.0
+sendgrid==6.11.0
 six==1.16.0
+starkbank-ecdsa==2.2.0
 typer==0.9.0
 typing_extensions==4.8.0
 tzdata==2023.3

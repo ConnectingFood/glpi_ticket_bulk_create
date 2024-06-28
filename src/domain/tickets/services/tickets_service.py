@@ -5,8 +5,7 @@ import pandas
 
 from src.domain.tickets.repositories.ticket_repository import TicketRepository
 from src.domain.tickets.repositories.ticket_glpi_repository import TicketGLPIRepository
-from src.domain.tickets.models.ticket_model import CreateTicketModel
-from src.domain.tickets.models.ticket_model import ClientShopModel
+from src.domain.tickets.models.ticket_model import ClientShopModel, CreateTicketModel
 
 
 class TicketService:

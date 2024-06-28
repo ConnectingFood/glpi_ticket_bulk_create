@@ -3,7 +3,7 @@ from typing import List, Dict, Tuple
 import requests
 
 from src.shared.repositories.base_glpi_repository import BaseGLPIRepository
-from src.domain.tickets.models.ticket_model import CreateTicketModel
+from src.domain.tickets.models.ticket_model import CreateTicketModel, CreateTicketFollowUpModel
 from src.domain.orgs.models.glpi_org_model import GLPIOrgModel
 
 
@@ -16,6 +16,24 @@ class TicketGLPIRepository(BaseGLPIRepository):
     
     def get_entity_id_by_cnpj(self, list_cnpj: List[str]) -> Tuple[List[int],List[str]]:
 
+        json_result = self.__search_entity_by_cnpj__(list_cnpj)
+
+        if json_result['totalcount'] > 0:
+            return (list(map(lambda x: x["2"], json_result["data"])), list(map(lambda x: x["70"], json_result["data"])))
+        return []
+    
+    def get_entity_email_by_id(self, list_id: List[str]) -> List[Tuple[int, str]]:
+        
+        list_entity_emails = []
+        for id in list_id:
+            full_url = f"{self.BASE_GLPI_URL}/entity/{id}/"
+            result = requests.get(full_url, headers=self.get_auth_header(session=True))
+            list_entity_emails.append((id, result.json().get("email")))
+        # if json_result['totalcount'] > 0:
+        #     return list(map(lambda x: x.get("6"), json_result["data"]))
+        return list_entity_emails
+    
+    def __search_entity_by_cnpj__(self, list_cnpj: List[str]) -> dict:
         filters = {}
         for index, cnpj in enumerate(list_cnpj):
             filters[f"criteria[{index}][field]"] = "70"
@@ -30,10 +48,7 @@ class TicketGLPIRepository(BaseGLPIRepository):
         full_url = f"{self.BASE_GLPI_URL}/search/entity/"
         result = requests.get(full_url, headers=self.get_auth_header(session=True),params=filters)
         json_result = result.json()
-
-        if json_result['totalcount'] > 0:
-            return (list(map(lambda x: x["2"], json_result["data"])), list(map(lambda x: x["70"], json_result["data"])))
-        return []
+        return json_result
     
     def get_entity_list(self) -> Tuple[List[int], List[str], List[str]]:
 
@@ -59,8 +74,8 @@ class TicketGLPIRepository(BaseGLPIRepository):
 
         return glpi_result
     
-    def create_ticket(self, ticket_create_model: List[CreateTicketModel]):
-        payload = CreateTicketModel.bulk_model_dump(ticket_create_model)
+    def create_ticket(self, ticket_create_model: CreateTicketModel):
+        payload = ticket_create_model.model_dump()
         full_url = f"{self.BASE_GLPI_URL}/Ticket/"
         result = requests.post(full_url, headers=self.get_auth_header(session=True), json={"input": payload})
         return result
@@ -70,4 +85,3 @@ class TicketGLPIRepository(BaseGLPIRepository):
         full_url = f"{self.BASE_GLPI_URL}/entity/"
         result = requests.post(full_url, headers=self.get_auth_header(session=True), json={"input": payload})
         return result
-    
