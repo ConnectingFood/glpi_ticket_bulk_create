@@ -1,4 +1,4 @@
-from typing import List, Dict, Tuple
+from typing import List, Dict, Tuple, Union
 
 import requests
 
@@ -74,8 +74,8 @@ class TicketGLPIRepository(BaseGLPIRepository):
 
         return glpi_result
     
-    def create_ticket(self, ticket_create_model: CreateTicketModel):
-        payload = ticket_create_model.model_dump()
+    def create_ticket(self, ticket_create_model: Union[CreateTicketModel, List[CreateTicketModel]]):
+        payload = CreateTicketModel.bulk_model_dump(ticket_create_model) if isinstance(ticket_create_model, list) else ticket_create_model.model_dump()
         full_url = f"{self.BASE_GLPI_URL}/Ticket/"
         result = requests.post(full_url, headers=self.get_auth_header(session=True), json={"input": payload})
         return result
