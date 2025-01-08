@@ -116,8 +116,8 @@ class OrgRepository(BaseRepository):
             )
             and emp.cliente_id=1
             and emp.cd_status=1
-            and ent.data_vencimento>=GETDATE()-15
-            and ent.data_vencimento<=GETDATE()+60
+            and ent.data_vencimento>=GETDATE()
+            and ent.data_vencimento<=GETDATE()+45
         order by ent.data_vencimento
         """
         self.execute(query=query)
