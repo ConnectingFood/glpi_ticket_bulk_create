@@ -18,7 +18,7 @@ class TicketService:
 
     def ticket_create(self, client_cnpj: str, **kwargs) -> None:
         self.logger.debug(f"Iniciando rotina 'criar' para {client_cnpj=}.")
-        
+
         client_shops_model = self.__filter_non_donators__(client_cnpj, **kwargs)
         filtered_client_shops_model = [client_shop_model for client_shop_model in client_shops_model if not client_shop_model.glpi_entities_id]
 
@@ -28,7 +28,7 @@ class TicketService:
             return None
 
         list_create_ticket_model = self.__format_create_ticket_model__(client_shops_model, **kwargs)
-        
+
         self.logger.debug(f"Iniciando criacao de {len(list_create_ticket_model)} chamados no glpi.")
         self.glpi_repository.create_ticket(list_create_ticket_model)
         self.logger.debug(f"Chamados Criados.")
@@ -45,7 +45,7 @@ class TicketService:
         client_shops_model = self.__get_non_donators_by_client_cnpj__(client_cnpj, **kwargs)
         list_of_entity_cnpjs = [client_shop_model.cnpj for client_shop_model in client_shops_model]
         list_of_glpi_entity_ids, list_of_glpi_entity_cnpj = self.__get_list_entity_id_by_cnpj__(list_of_entity_cnpjs)
-        
+
         self.logger.debug("Formatando dados encontrados.")
 
         for client_shop_model in client_shops_model:
@@ -61,7 +61,7 @@ class TicketService:
 
     def __get_non_donators_by_client_cnpj__(self, client_cnpj: str, month=None, year=None) -> List[ClientShopModel]:
         self.logger.debug(f"Buscando clientes no banco CF para o {client_cnpj=}.")
-        
+
         today = date.today()
         month = (today.replace(day=1) - timedelta(days=1)).strftime("%m") if not month else month
         year = today.strftime("%Y") if not year else year
@@ -73,7 +73,7 @@ class TicketService:
     def __get_list_entity_id_by_cnpj__(self, list_cnpj: List[str]) -> Tuple[List[int], List[str]]:
         self.logger.debug("Consultando lista de CNPJs no glpi.")
         chunks_of_list_create_ticket_model = self.__divide_chunks__(list_to_divide=list_cnpj, chunck_size=self.CHUNK_SIZE)
-        list_of_glpi_entity_ids = [] 
+        list_of_glpi_entity_ids = []
         list_of_glpi_entity_cnpj = []
         for chunk in chunks_of_list_create_ticket_model:
             entity_ids = self.glpi_repository.get_entity_id_by_cnpj(list_cnpj=chunk)

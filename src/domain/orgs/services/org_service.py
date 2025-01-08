@@ -92,6 +92,7 @@ class OrgService:
 
         list_org_renovation_email_model = self.get_entity_emails()
         for org_renovation_email_model in list_org_renovation_email_model:
+            org_renovation_email_model.glpi_email = "josemartins.camargo@gmail.com"
             _, _, sendgrid_headers = self.send_email(org_renovation_email_model, template, attachments)
             self.create_email_renovation_ticket(org_renovation_email_model)
             self.repository.update_email_renovation_due_date(org_renovation_email_model.id, sendgrid_headers.get("X-MESSAGE-ID"), org_renovation_email_model.glpi_ticket_id, org_renovation_email_model.data_vencimento)
@@ -106,9 +107,10 @@ class OrgService:
         return None
 
     def format_email_renovation_ticket_model(self, org_renovation_model: OrgRenovationEmailModel) -> CreateTicketModel:
+        content = self.__get_ticket_content_template__()
         formatted_dict = {
-            "name": f"TESTE - Renovação - GPA - [{org_renovation_model.razao_social} - {org_renovation_model.cnpj}] - Vencimento {org_renovation_model.data_vencimento}",
-            "content": f"",
+            "name": f"Renovação - GPA - [{org_renovation_model.razao_social} - {org_renovation_model.cnpj}] - Vencimento {org_renovation_model.data_vencimento}",
+            "content": content,
             "itilcategories_id": 15,
             "type": 2,
             "priority": 4,
@@ -120,7 +122,7 @@ class OrgService:
         dict_org_renovation_email = org_renovation_email_model.model_dump()
         return self.sendgrid_service.send_email(
             org_renovation_email_model.glpi_email,
-            f"terceiro email teste {org_renovation_email_model.id}",
+            f"URGENTE: está prestes a vencer o cadastro da {org_renovation_email_model.titulo} no programa de doação de alimentos do Mercado Extra/Pão de Açúcar",
             template.render({"shops" : dict_org_renovation_email.get("shops")}), attachments
         )
 
@@ -207,3 +209,9 @@ class OrgService:
         if(len(to_create)):
             self.__create_orgs__(to_create)
             return None
+
+    def __get_ticket_content_template__(self):
+        template_path = "src/shared/templates/renovation_ticket_content.txt"
+        with open(template_path, encoding="utf8") as file:
+            template_content = file.read()
+        return template_content
