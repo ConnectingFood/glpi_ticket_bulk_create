@@ -92,7 +92,6 @@ class OrgService:
 
         list_org_renovation_email_model = self.get_entity_emails()
         for org_renovation_email_model in list_org_renovation_email_model:
-            org_renovation_email_model.glpi_email = "josemartins.camargo@gmail.com"
             _, _, sendgrid_headers = self.send_email(org_renovation_email_model, template, attachments)
             self.create_email_renovation_ticket(org_renovation_email_model)
             self.repository.update_email_renovation_due_date(org_renovation_email_model.id, sendgrid_headers.get("X-MESSAGE-ID"), org_renovation_email_model.glpi_ticket_id, org_renovation_email_model.data_vencimento)
