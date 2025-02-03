@@ -1,7 +1,16 @@
 import base64
 from typing import List
 from sendgrid import SendGridAPIClient
-from sendgrid.helpers.mail import (Mail, Attachment, FileContent, FileName, FileType, Disposition)
+from sendgrid.helpers.mail import (
+    Mail,
+    Attachment,
+    FileContent,
+    FileName,
+    FileType,
+    Disposition,
+    Email,
+    Personalization,
+)
 from src.shared.models.sendgrid_attachment_model import AttachmentModel
 
 class SendgridService:
@@ -12,15 +21,26 @@ class SendgridService:
     def send_email(self, to_emails: list, subject: str, html_content: str, attachments: List[AttachmentModel]) -> tuple:
         message = Mail(
             from_email=self._from_email,
-            to_emails=to_emails,
+            # to_emails=to_emails,
             subject=subject,
-            html_content=html_content
+            html_content=html_content,
         )
+        cc_email = self._from_email
+        p = Personalization()
+        if type(to_emails) == list:
+            for email in to_emails:
+                p.add_to(Email(email))
+        else:
+            p.add_to(Email(to_emails))
+        
+        p.add_cc(Email(cc_email))
+
         try:
             list_sendgrid_attachment = []
             for attachment in attachments:
                 list_sendgrid_attachment.append(self.get_attachment(attachment))
             message.attachment = list_sendgrid_attachment
+            message.add_personalization(p)
             sg = SendGridAPIClient(self._sendgrid_key)
             response = sg.send(message)
             return response.status_code, response.body, response.headers
